@@ -56,7 +56,7 @@ export function SiteHeader() {
             </div>
           </details>
           <a
-            href="#contact"
+            href="#schedule"
             className="rounded-full bg-sage-dark px-4 py-2 text-sm font-semibold text-white shadow-soft transition hover:bg-sage-hover sm:px-5"
           >
             Book a class

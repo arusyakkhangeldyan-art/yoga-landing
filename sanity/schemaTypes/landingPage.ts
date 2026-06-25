@@ -40,6 +40,40 @@ export const landingPage = {
         type: 'text',
       },
       {
+        name: 'scheduleEyebrow',
+        title: 'Schedule Eyebrow',
+        type: 'string',
+        description: 'Small label above the schedule heading (e.g. "Class schedule")',
+      },
+      {
+        name: 'scheduleTitle',
+        title: 'Schedule Title',
+        type: 'string',
+      },
+      {
+        name: 'scheduleDescription',
+        title: 'Schedule Description',
+        type: 'text',
+        description: 'Optional supporting text below the schedule heading',
+      },
+      {
+        name: 'pricingEyebrow',
+        title: 'Pricing Eyebrow',
+        type: 'string',
+        description: 'Small label above the pricing heading (e.g. "Pricing")',
+      },
+      {
+        name: 'pricingTitle',
+        title: 'Pricing Title',
+        type: 'string',
+      },
+      {
+        name: 'pricingDescription',
+        title: 'Pricing Description',
+        type: 'text',
+        description: 'Optional supporting text below the pricing heading',
+      },
+      {
         name: 'faqEyebrow',
         title: 'FAQ Eyebrow',
         type: 'string',

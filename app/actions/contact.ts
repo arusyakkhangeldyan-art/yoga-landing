@@ -1,5 +1,7 @@
 "use server";
 
+import { getContactTemplateId, sendEmailWithEmailJs } from "@/lib/emailjs";
+
 export type ContactState = {
   ok: boolean;
   message: string;
@@ -22,9 +24,25 @@ export async function submitContact(
     return { ok: false, message: "Please enter a valid email address." };
   }
 
-  return {
-    ok: true,
-    message:
-      "Thank you. We received your message and will reply within one business day.",
-  };
+  try {
+    await sendEmailWithEmailJs({
+      templateId: getContactTemplateId(),
+      templateParams: {
+        name,
+        email,
+        message,
+      },
+    });
+
+    return {
+      ok: true,
+      message:
+        "Thank you for reaching out. We will get back to you shortly.",
+    };
+  } catch {
+    return {
+      ok: false,
+      message: "Something went wrong. Please try again in a moment.",
+    };
+  }
 }

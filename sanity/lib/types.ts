@@ -1,12 +1,26 @@
 import type { SanityImageSource } from "@sanity/image-url";
 
+export type ScheduleLocationType = "Studio" | "Online";
+
+export type ScheduleLevel =
+  | "Beginner"
+  | "Intermediate"
+  | "Advanced"
+  | "All Levels";
+
 export type ScheduleItem = {
   _id: string;
   date?: string;
   time?: string;
   title?: string;
-  level?: string;
+  /** Known levels from Studio; legacy entries may use other strings. */
+  level?: ScheduleLevel | string;
   notes?: string;
+  duration?: string;
+  instructor?: string;
+  capacity?: number;
+  locationType?: ScheduleLocationType;
+  description?: string;
 };
 
 export type FaqItem = {
@@ -31,6 +45,12 @@ export type LandingPage = {
   aboutDescription?: string;
   contactTitle?: string;
   contactDescription?: string;
+  scheduleEyebrow?: string;
+  scheduleTitle?: string;
+  scheduleDescription?: string;
+  pricingEyebrow?: string;
+  pricingTitle?: string;
+  pricingDescription?: string;
   faqEyebrow?: string;
   faqTitle?: string;
   faqDescription?: string;

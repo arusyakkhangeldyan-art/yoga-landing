@@ -6,21 +6,40 @@ import { IconHatha, IconVinyasa, IconYin } from "@/app/components/service-icon";
 import { SiteFooter } from "@/app/components/site-footer";
 import { SiteHeader } from "@/app/components/site-header";
 import { VideoLibrary } from "@/app/components/video-library";
+import { PricingSection } from "@/app/components/pricing-section";
+import { ScheduleSection } from "@/app/components/schedule-section";
 import { TestimonialsSlider } from "@/app/components/testimonials-slider";
 import { faqs as defaultFaqs, pricingPlans, services, testimonials as defaultTestimonials } from "@/app/data/content";
 import { onlineVideos } from "@/app/data/videos";
 import { mapSanityTestimonials } from "@/sanity/lib/map-testimonials";
 import { getHeroImageUrl } from "@/sanity/lib/map-hero-image";
 import { client } from "@/sanity/lib/sanity";
-import type { LandingPage, ScheduleItem } from "@/sanity/lib/types";
+import type { LandingPage } from "@/sanity/lib/types";
 
 const serviceIcons = [IconHatha, IconVinyasa, IconYin];
 
 async function getSchedule() {
   try {
-    const data = await client.fetch(`
-      *[_type == "schedule"] | order(date asc)
-    `);
+    const today = new Date().toISOString().slice(0, 10);
+
+    const data = await client.fetch(
+      `
+      *[_type == "schedule" && defined(date) && date >= $today] | order(date asc) {
+        _id,
+        date,
+        time,
+        title,
+        level,
+        notes,
+        duration,
+        instructor,
+        capacity,
+        locationType,
+        description
+      }
+    `,
+      { today },
+    );
 
     console.log("SANITY DATA:", data);
 
@@ -43,6 +62,12 @@ async function getLandingPage(): Promise<LandingPage | null> {
         aboutDescription,
         contactTitle,
         contactDescription,
+        scheduleEyebrow,
+        scheduleTitle,
+        scheduleDescription,
+        pricingEyebrow,
+        pricingTitle,
+        pricingDescription,
         faqEyebrow,
         faqTitle,
         faqDescription,
@@ -111,7 +136,7 @@ export default async function Home() {
                 </p>
                 <div className="mt-10 flex flex-wrap items-center gap-4">
                   <a
-                    href="#contact"
+                    href="#schedule"
                     className="inline-flex items-center justify-center rounded-full bg-sage-dark px-9 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-sage-hover"
                   >
                     Book a class
@@ -222,45 +247,15 @@ export default async function Home() {
           </div>
         </section>
 
-        <section id="schedule" className="relative px-6 py-16 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <div className="flex flex-col justify-between gap-8 rounded-3xl border border-sage/20 bg-gradient-to-br from-sage-soft/80 to-white p-8 md:p-9">
-              <div>
-                <p className="text-sm font-semibold text-sage-dark">
-                  Today at the studio
-                </p>
-                <ul className="mt-5 space-y-4 text-sm text-muted">
-                  {schedule.map((item: ScheduleItem) => (
-                    <li
-                      key={item._id}
-                      className="border-b border-sage/15 pb-3"
-                    >
-                      <div>
-                        <strong>Date:</strong> {item.date}
-                      </div>
-                      <div>
-                        <strong>Time:</strong> {item.time}
-                      </div>
-                      <div>
-                        <strong>Title:</strong> {item.title}
-                      </div>
-                      <div>
-                        <strong>Level:</strong> {item.level}
-                      </div>
-                      <div>
-                        <strong>Notes:</strong> {item.notes}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <p className="text-sm leading-relaxed text-muted">
-                Arrive ten minutes early. Herbal tea, filtered water, and soft
-                lighting are always waiting.
-              </p>
-            </div>
-          </div>
-        </section>
+        <ScheduleSection
+          items={schedule}
+          eyebrow={landing?.scheduleEyebrow ?? "Class schedule"}
+          title={landing?.scheduleTitle ?? "Today at the studio"}
+          description={
+            landing?.scheduleDescription ??
+            "Browse upcoming classes and find a session that fits your practice."
+          }
+        />
 
         <section id="videos" className="relative px-6 py-16 md:py-24">
           <div className="mx-auto max-w-6xl">
@@ -273,84 +268,15 @@ export default async function Home() {
           </div>
         </section>
 
-        <section id="pricing" className="relative px-6 py-16 md:py-24">
-          <div className="mx-auto max-w-6xl">
-            <SectionTitle
-              eyebrow="Pricing"
-              title="Memberships with quiet confidence"
-              description="Transparent plans for occasional visits, weekly rhythm, or full immersion—pause or change anytime."
-              centered
-            />
-            <div className="mt-14 grid gap-6 lg:grid-cols-3">
-              {pricingPlans.map((plan) => (
-                <article
-                  key={plan.name}
-                  className={`relative flex h-full flex-col rounded-3xl border p-9 shadow-soft transition duration-300 hover:-translate-y-0.5 ${
-                    plan.featured
-                      ? "border-sage-rich/90 bg-sage-rich text-white lg:scale-[1.02] lg:shadow-glow"
-                      : "border-sage/20 bg-white/95 hover:border-sage/35"
-                  }`}
-                >
-                  {plan.featured ? (
-                    <span className="absolute right-6 top-6 rounded-full bg-white/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/90">
-                      Popular
-                    </span>
-                  ) : null}
-                  <h3
-                    className={`font-display text-2xl font-semibold ${plan.featured ? "text-white" : "text-ink"}`}
-                  >
-                    {plan.name}
-                  </h3>
-                  <p className="mt-6 flex items-baseline gap-1">
-                    <span
-                      className={`font-display text-4xl font-semibold tracking-tight ${plan.featured ? "text-white" : "text-ink"}`}
-                    >
-                      {plan.price}
-                    </span>
-                    <span
-                      className={`text-sm font-medium ${plan.featured ? "text-white/80" : "text-muted"}`}
-                    >
-                      {plan.cadence}
-                    </span>
-                  </p>
-                  <p
-                    className={`mt-2 text-sm font-medium ${plan.featured ? "text-white/85" : "text-sage-dark"}`}
-                  >
-                    {plan.details}
-                  </p>
-                  <p
-                    className={`mt-4 text-sm leading-relaxed ${plan.featured ? "text-white/88" : "text-muted"}`}
-                  >
-                    {plan.description}
-                  </p>
-                  <ul
-                    className={`mt-8 space-y-3 text-sm ${plan.featured ? "text-white/92" : "text-muted"}`}
-                  >
-                    {plan.perks.map((perk) => (
-                      <li key={perk} className="flex gap-3">
-                        <span
-                          className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${plan.featured ? "bg-white/70" : "bg-sage"}`}
-                          aria-hidden
-                        />
-                        <span>{perk}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <a
-                    href="#contact"
-                    className={`mt-10 inline-flex items-center justify-center rounded-full px-7 py-3 text-sm font-semibold transition ${
-                      plan.featured
-                        ? "bg-white text-sage-dark hover:bg-sage-soft"
-                        : "bg-sage-dark text-white hover:bg-sage-hover"
-                    }`}
-                  >
-                    Choose {plan.name}
-                  </a>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <PricingSection
+          plans={pricingPlans}
+          eyebrow={landing?.pricingEyebrow ?? "Pricing"}
+          title={landing?.pricingTitle ?? "Memberships with quiet confidence"}
+          description={
+            landing?.pricingDescription ??
+            "Transparent plans for occasional visits, weekly rhythm, or full immersion—pause or change anytime."
+          }
+        />
 
         <TestimonialsSlider
           key={testimonialItems.map((t) => t._key ?? t.name).join("-")}
@@ -396,8 +322,8 @@ export default async function Home() {
           <div className="mx-auto max-w-3xl rounded-[2rem] border border-sage/25 bg-white/95 p-8 shadow-glow md:p-12">
             <SectionTitle
               eyebrow="Contact"
-              title="Book your first class"
-              description="Tell us your preferred style and schedule. We will confirm availability within one business day."
+              title="Questions?"
+              description="We'd love to hear from you."
             />
             <ContactForm />
           </div>

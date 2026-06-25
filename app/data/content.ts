@@ -20,7 +20,17 @@ export const services = [
       "Long-held shapes that soften tension, hydrate fascia, and quiet the mind.",
   },
 ];
-export const pricingPlans = [
+export type PricingPlan = {
+  name: string;
+  price: string;
+  cadence: string;
+  details: string;
+  description: string;
+  perks: string[];
+  featured?: true;
+};
+
+export const pricingPlans: PricingPlan[] = [
   {
     name: "Essential",
     price: "$59",
