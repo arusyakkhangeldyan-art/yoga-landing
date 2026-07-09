@@ -12,7 +12,7 @@ import { TestimonialsSlider } from "@/app/components/testimonials-slider";
 import { faqs as defaultFaqs, pricingPlans, services, testimonials as defaultTestimonials } from "@/app/data/content";
 import { onlineVideos } from "@/app/data/videos";
 import { mapSanityTestimonials } from "@/sanity/lib/map-testimonials";
-import { getHeroImageUrl } from "@/sanity/lib/map-hero-image";
+import { getHeroImageUrl, getHeroImagePosition } from "@/sanity/lib/map-hero-image";
 import { client } from "@/sanity/lib/sanity";
 import type { LandingPage } from "@/sanity/lib/types";
 
@@ -102,6 +102,7 @@ export default async function Home() {
   const testimonialItems =
     mapSanityTestimonials(landing) ?? defaultTestimonials;
   const heroImageUrl = getHeroImageUrl(landing);
+  const heroImagePosition = getHeroImagePosition(landing);
   
   return (
     <>
@@ -120,70 +121,56 @@ export default async function Home() {
           aria-hidden
         />
        
-        <section className="relative px-6 pb-20 pt-12 md:pb-24 md:pt-16">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-10 rounded-[2.25rem] border border-white/80 bg-white/85 p-8 shadow-glow backdrop-blur-md md:grid-cols-[1.05fr_0.95fr] md:items-stretch md:p-12 lg:p-14">
-              <div className="flex flex-col justify-center">
-                <Logo className="mb-6 h-16 w-12 sm:h-20 sm:w-14" />
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-sage-dark">
-                  Yoga with Arika
-                </p>
-                <h1 className="mt-5 font-display text-[2.65rem] font-semibold leading-[1.08] tracking-tight text-ink md:text-6xl lg:text-[4.25rem]">
-                  {landing?.heroTitle}
-                </h1>
-                <p className="mt-6 max-w-xl text-base leading-relaxed text-muted md:text-lg">
-                  {landing?.heroDescription}
-                </p>
-                <div className="mt-10 flex flex-wrap items-center gap-4">
-                  <a
-                    href="#schedule"
-                    className="inline-flex items-center justify-center rounded-full bg-sage-dark px-9 py-3.5 text-sm font-semibold text-white shadow-soft transition hover:bg-sage-hover"
-                  >
-                    Book a class
-                  </a>
-                  <a
-                    href="#pricing"
-                    className="text-sm font-semibold text-sage-dark underline-offset-4 transition hover:text-ink hover:underline"
-                  >
-                    View memberships
-                  </a>
-                </div>
-                <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-sage/20 pt-8 text-sm">
-                  <div>
-                    <dt className="text-muted">Class cap</dt>
-                    <dd className="mt-1 font-semibold text-ink">12 guests</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted">Styles</dt>
-                    <dd className="mt-1 font-semibold text-ink">Hatha · Flow · Yin</dd>
-                  </div>
-                  <div>
-                    <dt className="text-muted">Location</dt>
-                    <dd className="mt-1 font-semibold text-ink">Downtown</dd>
-                  </div>
-                </dl>
+        <section className="relative flex min-h-[85vh] items-center overflow-hidden md:min-h-[90vh]">
+          {heroImageUrl ? (
+            <Image
+              src={heroImageUrl}
+              alt="Yoga with Arika studio"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+              style={{ objectPosition: heroImagePosition }}
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-sage-soft via-cream to-white" />
+          )}
+
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/10"
+            aria-hidden
+          />
+          <div
+            className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-black/15"
+            aria-hidden
+          />
+
+          <div className="relative mx-auto w-full max-w-6xl px-6 py-20 md:py-24">
+            <div className="max-w-xl">
+            <Logo className="w-16 h-auto sm:w-20" />
+              <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/80">
+                Yoga with Arika
+              </p>
+              <h1 className="mt-6 font-display text-[2.75rem] font-semibold leading-[1.06] tracking-tight text-white md:text-6xl lg:text-[4.25rem]">
+                {landing?.heroTitle}
+              </h1>
+              <p className="mt-8 max-w-lg text-base leading-8 text-white/85 md:text-lg md:leading-9">
+                {landing?.heroDescription}
+              </p>
+              <div className="mt-12 flex flex-wrap items-center gap-4">
+                <a
+                  href="#schedule"
+                  className="inline-flex items-center justify-center rounded-full bg-sage-dark px-7 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-sage-hover"
+                >
+                  Book a Class
+                </a>
+                <a
+                  href="#pricing"
+                  className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-7 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white/60 hover:bg-white/20"
+                >
+                  View Subscriptions
+                </a>
               </div>
-              <aside className="relative min-h-[20rem] overflow-hidden rounded-3xl border border-sage/20 md:min-h-full">
-                {heroImageUrl ? (
-                  <Image
-                    src={heroImageUrl}
-                    alt="Yoga with Arika studio"
-                    fill
-                    priority
-                    sizes="(max-width: 768px) 100vw, 45vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full min-h-[20rem] flex-col items-center justify-center bg-gradient-to-br from-sage-soft/80 to-white p-8 text-center">
-                    <p className="text-sm font-medium text-sage-dark">
-                      Studio image
-                    </p>
-                    <p className="mt-2 text-sm text-muted">
-                      Add a hero image in Sanity Studio
-                    </p>
-                  </div>
-                )}
-              </aside>
             </div>
           </div>
         </section>
